@@ -2,7 +2,7 @@ using System.Data.Entity.Migrations;
 
 namespace Sample_MultiSelect.Data.Migrations
 {
-    internal sealed class Configuration : DbMigrationsConfiguration<Sample_MultiSelect.Data.DbContexts.AppContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<Sample_MultiSelect.Data.DbContexts.MultiSelectContext>
     {
         public Configuration()
         {
@@ -10,7 +10,7 @@ namespace Sample_MultiSelect.Data.Migrations
             AutomaticMigrationDataLossAllowed = true;
         }
 
-        protected override void Seed(Sample_MultiSelect.Data.DbContexts.AppContext context)
+        protected override void Seed(Sample_MultiSelect.Data.DbContexts.MultiSelectContext context)
         {
             //  This method will be called after migrating to the latest version.
 

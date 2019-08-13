@@ -4,12 +4,12 @@ using System.Data.Entity;
 
 namespace Sample_MultiSelect.Data.DbContexts
 {
-    public class AppContext : DbContext
+    public class MultiSelectContext : DbContext
     {
-        public AppContext()
-            : base("name=AppContext")
+        public MultiSelectContext()
+            : base("name=MultiSelectContext")
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<AppContext, Sample_MultiSelect.Data.Migrations.Configuration>());
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<MultiSelectContext, Sample_MultiSelect.Data.Migrations.Configuration>());
         }
 
         public DbSet<Player> Players { get; set; }
