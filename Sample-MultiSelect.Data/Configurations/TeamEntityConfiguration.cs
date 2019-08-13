@@ -24,9 +24,9 @@ namespace Sample_MultiSelect.Data.Configurations
                 .WithMany(p => p.Teams)
                 .Map(tp =>
                 {
-                    tp.MapLeftKey("PlayerId");
-                    tp.MapRightKey("TeamId");
-                    tp.ToTable("PlayerTeam");
+                    tp.MapLeftKey("TeamId");
+                    tp.MapRightKey("PlayerId");
+                    tp.ToTable("TeamPlayer");
                 });
         }
     }
