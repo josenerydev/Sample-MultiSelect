@@ -226,5 +226,38 @@ namespace Sample_MultiSelect.Web.Controllers
 
             return View(viewModel);
         }
+
+        public ActionResult Delete(Guid? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Player player = db.Players.Find(id);
+            if (player == null)
+            {
+                return HttpNotFound();
+            }
+            return View(player);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(Guid id)
+        {
+            Player player = db.Players.Find(id);
+            db.Players.Remove(player);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
