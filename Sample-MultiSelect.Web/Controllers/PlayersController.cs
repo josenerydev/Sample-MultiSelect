@@ -3,6 +3,7 @@ using Sample_MultiSelect.Data.Models;
 using Sample_MultiSelect.Web.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -107,6 +108,123 @@ namespace Sample_MultiSelect.Web.Controllers
                 ModelState.AddModelError("", "Something failed.");
                 return View(viewModel);
             }
+        }
+
+        public ActionResult Edit(Guid? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Player player = db.Players.Find(id);
+            if (player == null)
+            {
+                return HttpNotFound();
+            }
+
+            EditPlayerViewModel viewModel = new EditPlayerViewModel
+            {
+                Id = player.Id.ToString(),
+                Name = player.Name
+            };
+
+            var playerTeams = db.Teams.Where(i => i.Players.Any(j => j.Id.Equals(player.Id))).ToList();
+
+            if (playerTeams != null)
+            {
+                string[] playerTeamsIds = new string[playerTeams.Count];
+
+                int length = playerTeams.Count;
+
+                for (int i = 0; i < length; i++)
+                {
+                    playerTeamsIds[i] = playerTeams[i].Id.ToString();
+                }
+
+                MultiSelectList teamsList = new MultiSelectList(db.Teams.ToList().OrderBy(i => i.Name), "Id", "Name", playerTeamsIds);
+
+                viewModel.Teams = teamsList;
+
+                return View(viewModel);
+            }
+            else
+            {
+                MultiSelectList teamsList = new MultiSelectList(db.Teams.ToList().OrderBy(i => i.Name), "Id", "Name");
+
+                viewModel.Teams = teamsList;
+
+                return View(viewModel);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit([Bind(Include = "Id, Name, TeamIds")] EditPlayerViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                Player player = db.Players.Find(Guid.Parse(viewModel.Id));
+                if (player == null)
+                {
+                    return HttpNotFound();
+                }
+
+                player.Name = viewModel.Name;
+
+                if (viewModel.TeamIds.Count > 0)
+                {
+                    List<Team> viewModelTeams = new List<Team>();
+
+                    foreach (var id in viewModel.TeamIds)
+                    {
+                        var team = db.Teams.Find(Guid.Parse(id));
+
+                        if (team != null)
+                        {
+                            try
+                            {
+                                player.Teams.Add(team);
+                                viewModelTeams.Add(team);
+                            }
+                            catch (Exception ex)
+                            {
+                                return View("Error", new HandleErrorInfo(ex, "Players", "Index"));
+                            }
+                        }
+                    }
+
+                    var allTeams = db.Teams.ToList();
+
+                    var teamsToRemove = allTeams.Except(viewModelTeams);
+
+                    foreach (var team in teamsToRemove)
+                    {
+                        try
+                        {
+                            player.Teams.Remove(team);
+                        }
+                        catch (Exception ex)
+                        {
+                            return View("Error", new HandleErrorInfo(ex, "Players", "Index"));
+                        }
+                    }
+                }
+
+                try
+                {
+                    db.Entry(player).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    return View("Error", new HandleErrorInfo(ex, "Players", "Index"));
+                }
+
+                return RedirectToAction("Details", new { id = player.Id });
+            }
+
+            return View(viewModel);
         }
     }
 }
