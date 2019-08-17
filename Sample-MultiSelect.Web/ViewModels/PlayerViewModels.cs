@@ -8,7 +8,7 @@ namespace Sample_MultiSelect.Web.ViewModels
     {
         [Required]
         [Display(Name = "Player Name")]
-        [StringLength(128, ErrorMessage = "Players name can only be 128 characters in length.")]
+        [StringLength(128, ErrorMessage = "Player's name can only be 128 characters in length.")]
         public string Name { get; set; }
 
         public List<string> TeamIds { get; set; }
