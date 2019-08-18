@@ -1,7 +1,6 @@
 ﻿@model Sample_MultiSelect.Data.Models.Player
 
 @{
-    Layout = null;
     ViewBag.Title = "Details";
 }
 
@@ -17,7 +16,7 @@
             foreach (var team in Model.Teams)
             {
                 <dd>
-                    @Html.DisplayFor(model => model.Name)
+                    @Html.DisplayFor(model => team.Name)
                 </dd>
             }
         }
